@@ -22,7 +22,7 @@
     <style>
         .title {
             margin: auto;
-            background-image: url(https://www.mobileautomation.com.au/wp-content/uploads/2017/02/UR10_Left-768x878.jpg);
+            background-image: url();
             background-position: center;
             background-size: cover;
             width: 300px;
@@ -33,10 +33,9 @@
         }
 
         .wrap {
-            width: 1920px;
-            margin: 10px auto;
-            text-align: center;
-            padding-bottom: 10px;
+            width: 65%;
+            margin: 0 auto;
+            border-radius: 10px;
         }
 
         .wrap2 {
@@ -44,6 +43,11 @@
             margin: 10px auto;
             text-align: center;
             padding-bottom: 10px;
+        }
+
+        .wrap_box {
+            width: 1200px;
+            margin: auto;
         }
 
         .wrap_ecotrand {
@@ -72,14 +76,9 @@
             width: 1200px;
             margin: 10px auto;
             text-align: left;
-            ;
             padding-bottom: 10px;
         }
 
-        .name {
-            font-size: 30px;
-            font-weight: bold;
-        }
 
         body {
             font-family: 'Song Myung', serif;
@@ -87,21 +86,19 @@
     </style>
 
     <script>
-
         $(document).ready(function () {
             listing()
         });
         // tabla onclick
         function changeTrColor(trObj, oldColor, newColor) {
-				trObj.style.backgroundColor = newColor;
-				trObj.onmouseout = function(){
-					trObj.style.backgroundColor = oldColor;
-				}
-			}
-			function clickTrEvent(trObj) {
-				alert(trObj.id);
-			}
-
+            trObj.style.backgroundColor = newColor;
+            trObj.onmouseout = function () {
+                trObj.style.backgroundColor = oldColor;
+            }
+        }
+        function clickTrEvent(trObj) {
+            alert(trObj.id);
+        }
         // 페이지 로딩시 화면 표시
         function listing() {
             $.ajax({
@@ -120,7 +117,7 @@
                 }
             })
             $.ajax({
-                type: "GET",   
+                type: "GET",
                 url: '/korindices', // investing.com으로 부터 국내지수 크롤링
                 data: {},
                 success: function (response) {
@@ -164,7 +161,6 @@
                 }
             })
         }
-
         // function kospi_chare(kospi) {
         //     $.ajax({
         //         type: 'POST',
@@ -179,24 +175,27 @@
         //         }
         //     });
         // }
-
     </script>
 </head>
 
 <body>
-    <div class="jumbotron jumbotron-fluid">
-        <div class="container">
-            <h1 class="display-4">PROJECT TEST</h1>
-            <p class="lead">스파르타 코딩 클럽 8기 개인 프로젝트 준비 중입니다.</p>
+    <div class="wrap">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">PROJECT TEST</h1>
+                <p class="lead">스파르타 코딩 클럽 8기 개인 프로젝트 준비 중입니다.</p>
+            </div>
         </div>
     </div>
     <div class="wrap_currency_title">
-        <a class="name"> 환율정보 </a>
+        <a>
+            <h3>환율정보</h3>
+        </a>
     </div>
     <div class="wrap_currency">
         <table class="table table-hover">
             <thead>
-                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="col">#</th>
                     <th scope="col">USD / KRW</th>
                     <th scope="col">CNY / KRW</th>
@@ -205,7 +204,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">기준환율</th>
                     <td>
                         <div id="usrates" style="color:rgb(8, 31, 241)"></div>
@@ -224,12 +223,15 @@
         </table>
     </div>
     <div class="wrap_ecotrand_title">
-        <a class="name"> 주요지표 </a>
+        <a>
+            <h3>주요지표</h3>
+        </a>
     </div>
+
     <div class="wrap_ecotrand">
         <table class="table table-hover">
             <thead>
-                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="col">#</th>
                     <th scope="col">KOSPI</th>
                     <th scope="col">KOSDAQ</th>
@@ -239,26 +241,36 @@
                 </tr>
             </thead>
             <tbody>
-                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">지수</th>
-                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EKS11?p=^KS11&.tsrc=fin-srch');" style = "cursor:pointer">
+                    <td align="center"
+                        onClick="window.open('https://finance.yahoo.com/quote/%5EKS11?p=^KS11&.tsrc=fin-srch');"
+                        style="cursor:pointer">
                         <div id="kospi" style="color:rgb(8, 31, 241)"></div>
                     </td>
-                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EKOSDAQ?p=^KOSDAQ&.tsrc=fin-srch');" style = "cursor:pointer">
+                    <td align="center"
+                        onClick="window.open('https://finance.yahoo.com/quote/%5EKOSDAQ?p=^KOSDAQ&.tsrc=fin-srch');"
+                        style="cursor:pointer">
                         <div id="kosdaq" style="color:rgb(241, 8, 27)"></div>
                     </td>
-                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC&.tsrc=fin-srch');" style = "cursor:pointer">
+                    <td align="center"
+                        onClick="window.open('https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC&.tsrc=fin-srch');"
+                        style="cursor:pointer">
                         <div id="snp" style="color:rgb(8, 241, 163)"></div>
                     </td>
-                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EIXIC?p=^IXIC&.tsrc=fin-srch');" style = "cursor:pointer">
+                    <td align="center"
+                        onClick="window.open('https://finance.yahoo.com/quote/%5EIXIC?p=^IXIC&.tsrc=fin-srch');"
+                        style="cursor:pointer">
                         <div id="nasdaq" style="color:rgb(241, 237, 8)"></div>
                     </td>
-                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EDJI?p=^DJI&.tsrc=fin-srch');" style = "cursor:pointer">
+                    <td align="center"
+                        onClick="window.open('https://finance.yahoo.com/quote/%5EDJI?p=^DJI&.tsrc=fin-srch');"
+                        style="cursor:pointer">
                         <div id="dji" style="color:rgb(241, 237, 8)"></div>
                     </td>
                 </tr>
 
-                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">변동</th>
                     <td>
                         <div id="kospi_inde" style="color:rgb(8, 31, 241)"></div>
@@ -277,7 +289,7 @@
                     </td>
                 </tr>
 
-                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">변동%</th>
                     <td>
                         <div id="kospi_width" style="color:rgb(8, 31, 241)"></div>
@@ -297,6 +309,71 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div class="wrap_box">
+        <div class="card-columns" id="cards-box">
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
 
