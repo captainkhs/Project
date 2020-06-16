@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- table onclick -->
+    <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- JQuery를 import 합니다 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <title>파피봇과 경제 생활 | 개인 프로젝트</title>
+
+    <style>
+        .title {
+            margin: auto;
+            background-image: url(https://www.mobileautomation.com.au/wp-content/uploads/2017/02/UR10_Left-768x878.jpg);
+            background-position: center;
+            background-size: cover;
+            width: 300px;
+            height: 300px;
+            color: white;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        .wrap {
+            width: 1920px;
+            margin: 10px auto;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .wrap2 {
+            width: 400px;
+            margin: 10px auto;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .wrap_ecotrand {
+            width: 1200px;
+            margin: 10px auto;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .wrap_ecotrand_title {
+            width: 1200px;
+            margin: 10px auto;
+            text-align: left;
+            ;
+            padding-bottom: 10px;
+        }
+
+        .wrap_currency {
+            width: 1200px;
+            margin: 10px auto;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .wrap_currency_title {
+            width: 1200px;
+            margin: 10px auto;
+            text-align: left;
+            ;
+            padding-bottom: 10px;
+        }
+
+        .name {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        body {
+            font-family: 'Song Myung', serif;
+        }
+    </style>
+
+    <script>
+
+        $(document).ready(function () {
+            listing()
+        });
+        // tabla onclick
+        function changeTrColor(trObj, oldColor, newColor) {
+				trObj.style.backgroundColor = newColor;
+				trObj.onmouseout = function(){
+					trObj.style.backgroundColor = oldColor;
+				}
+			}
+			function clickTrEvent(trObj) {
+				alert(trObj.id);
+			}
+
+        // 페이지 로딩시 화면 표시
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: '/currency',
+                data: {},
+                success: function (response) {
+                    let usrate = response.USDKRW[0];
+                    let cnrate = response.CNYKRW[0];
+                    let eurate = response.EURKRW[0];
+                    let jprate = response.JPYKRW[0];
+                    $('#usrates').html(usrate);
+                    $('#cnrates').html(cnrate);
+                    $('#eurates').html(eurate);
+                    $('#jprates').html(jprate);
+                }
+            })
+            $.ajax({
+                type: "GET",   
+                url: '/korindices', // investing.com으로 부터 국내지수 크롤링
+                data: {},
+                success: function (response) {
+                    let KOSPI = response['KOSPI'];
+                    let KOSPI_INDE = response['KOSPI_INDE'];
+                    let KOSPI_WIDTH = response['KOSPI_WIDTH'];
+                    let KOSDAQ = response['KOSDAQ'];
+                    let KOSDAQ_INDE = response['KOSDAQ_INDE'];
+                    let KOSDAQ_WIDTH = response['KOSDAQ_WIDTH'];
+                    $('#kospi').html(KOSPI);
+                    $('#kospi_inde').html(KOSPI_INDE);
+                    $('#kospi_width').html(KOSPI_WIDTH);
+                    $('#kosdaq').html(KOSDAQ);
+                    $('#kosdaq_inde').html(KOSDAQ_INDE);
+                    $('#kosdaq_width').html(KOSDAQ_WIDTH);
+                }
+            })
+            $.ajax({
+                type: "GET",
+                url: '/amrindices',  // investing.com으로 부터 미국지수 크롤링
+                data: {},
+                success: function (response) {
+                    let SNP = response['SNP'];
+                    let SNP_INDE = response['SNP_INDE'];
+                    let SNP_WIDTH = response['SNP_WIDTH'];
+                    let NASDAQ = response['NASDAQ'];
+                    let NASDAQ_INDE = response['NASDAQ_INDE'];
+                    let NASDAQ_WIDTH = response['NASDAQ_WIDTH'];
+                    let DJI = response['DJI'];
+                    let DJI_INDE = response['DJI_INDE'];
+                    let DJI_WIDTH = response['DJI_WIDTH'];
+                    $('#snp').html(SNP);
+                    $('#snp_inde').html(SNP_INDE);
+                    $('#snp_width').html(SNP_WIDTH);
+                    $('#nasdaq').html(NASDAQ);
+                    $('#nasdaq_inde').html(NASDAQ_INDE);
+                    $('#nasdaq_width').html(NASDAQ_WIDTH);
+                    $('#dji').html(DJI);
+                    $('#dji_inde').html(DJI_INDE);
+                    $('#dji_width').html(DJI_WIDTH);
+                }
+            })
+        }
+
+        // function kospi_chare(kospi) {
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '/api/kospi',
+        //         data: {'kospi' : kospi },
+        //         success: function (response) {
+        //             if (response['result'] == 'success') {
+        //                 let msg = response['msg'];
+        //                 alert(msg);
+        //                 window.location.reload();
+        //             }
+        //         }
+        //     });
+        // }
+
+    </script>
+</head>
+
+<body>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">PROJECT TEST</h1>
+            <p class="lead">스파르타 코딩 클럽 8기 개인 프로젝트 준비 중입니다.</p>
+        </div>
+    </div>
+    <div class="wrap_currency_title">
+        <a class="name"> 환율정보 </a>
+    </div>
+    <div class="wrap_currency">
+        <table class="table table-hover">
+            <thead>
+                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                    <th scope="col">#</th>
+                    <th scope="col">USD / KRW</th>
+                    <th scope="col">CNY / KRW</th>
+                    <th scope="col">EUR / KRW</th>
+                    <th scope="col">JPY / KRW</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                    <th scope="row">기준환율</th>
+                    <td>
+                        <div id="usrates" style="color:rgb(8, 31, 241)"></div>
+                    </td>
+                    <td>
+                        <div id="cnrates" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="eurates" style="color:rgb(8, 241, 163)"></div>
+                    </td>
+                    <td>
+                        <div id="jprates" style="color:rgb(241, 237, 8)"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="wrap_ecotrand_title">
+        <a class="name"> 주요지표 </a>
+    </div>
+    <div class="wrap_ecotrand">
+        <table class="table table-hover">
+            <thead>
+                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                    <th scope="col">#</th>
+                    <th scope="col">KOSPI</th>
+                    <th scope="col">KOSDAQ</th>
+                    <th scope="col">S&P500</th>
+                    <th scope="col">NASDAQ</th>
+                    <th scope="col">DOW</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                    <th scope="row">지수</th>
+                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EKS11?p=^KS11&.tsrc=fin-srch');" style = "cursor:pointer">
+                        <div id="kospi" style="color:rgb(8, 31, 241)"></div>
+                    </td>
+                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EKOSDAQ?p=^KOSDAQ&.tsrc=fin-srch');" style = "cursor:pointer">
+                        <div id="kosdaq" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC&.tsrc=fin-srch');" style = "cursor:pointer">
+                        <div id="snp" style="color:rgb(8, 241, 163)"></div>
+                    </td>
+                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EIXIC?p=^IXIC&.tsrc=fin-srch');" style = "cursor:pointer">
+                        <div id="nasdaq" style="color:rgb(241, 237, 8)"></div>
+                    </td>
+                    <td align ="center" onClick ="window.open('https://finance.yahoo.com/quote/%5EDJI?p=^DJI&.tsrc=fin-srch');" style = "cursor:pointer">
+                        <div id="dji" style="color:rgb(241, 237, 8)"></div>
+                    </td>
+                </tr>
+
+                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                    <th scope="row">변동</th>
+                    <td>
+                        <div id="kospi_inde" style="color:rgb(8, 31, 241)"></div>
+                    </td>
+                    <td>
+                        <div id="kosdaq_inde" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="snp_inde" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="nasdaq_inde" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="dji_inde" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                </tr>
+
+                <tr	onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                    <th scope="row">변동%</th>
+                    <td>
+                        <div id="kospi_width" style="color:rgb(8, 31, 241)"></div>
+                    </td>
+                    <td>
+                        <div id="kosdaq_width" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="snp_width" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="nasdaq_width" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                    <td>
+                        <div id="dji_width" style="color:rgb(241, 8, 27)"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+</body>
+
+</html>
