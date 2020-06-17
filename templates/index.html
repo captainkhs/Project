@@ -76,18 +76,21 @@
             width: 1200px;
             margin: 10px auto;
             text-align: left;
+            padding-top: 60px;
             padding-bottom: 10px;
         }
 
         body {
             font-family: 'Song Myung', serif;
         }
-/* 배경위치  */
+
+        /* 배경위치  */
         #static {
             width: 400px;
             height: 600px;
             background-color: white;
         }
+
         #relative2 {
             width: 400px;
             height: 600px;
@@ -96,6 +99,7 @@
             top: -600px;
             left: 400px;
         }
+
         #relative3 {
             width: 400px;
             height: 600px;
@@ -104,7 +108,9 @@
             top: -1200px;
             left: 800px;
         }
- /* 배경위치  */       
+
+
+        /* 배경위치  */
     </style>
 
     <script>
@@ -121,6 +127,11 @@
         function clickTrEvent(trObj) {
             alert(trObj.id);
         }
+
+        $('#mymodal').on('shown.bs.modal', function () {
+            $('#myInput').trigger('focus')
+        })
+
         // 페이지 로딩시 화면 표시
         function listing() {
             $.ajax({
@@ -201,22 +212,71 @@
 </head>
 
 <body>
-    <div class="wrap">
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h1 class="display-4">PROJECT TEST</h1>
-                <p class="lead">스파르타 코딩 클럽 8기 개인 프로젝트 준비 중입니다.</p>
+
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <a class="navbar-brand" href="#">Digital Nomad</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://finance.yahoo.com/">yahoo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://investing.com">investing</a>
+                        <!-- <a class="nav-link disabled" href="https://investing.com" tabindex="-1" aria-disabled="true">Disabled</a> -->
+                    </li>
+                </ul>
+                <form class="form-inline mt-2 mt-md-0">
+                    <input class="form-control mr-sm-2" type="text" placeholder="Enter code" aria-label="Search">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+                        search
+                    </button>
+                </form>
+            </div>
+        </nav>
+        <!-- Button trigger modal -->
+
+
+
+
+    </header>
+    <div class="wrap_currency_title">
+        <a> </a>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div>
             </div>
         </div>
     </div>
-    <div class="wrap_currency_title">
-        <a>
-            <h3>환율정보</h3>
-        </a>
-    </div>
+
+
     <div class="wrap_currency">
         <table class="table table-hover">
-            <thead>
+            <!-- <thead>
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="col">#</th>
                     <th scope="col">USD / KRW</th>
@@ -224,21 +284,30 @@
                     <th scope="col">EUR / KRW</th>
                     <th scope="col">JPY / KRW</th>
                 </tr>
-            </thead>
+            </thead> -->
             <tbody>
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                    <th scope="row">기준환율</th>
+                    <th scope="row">환율정보</th>
                     <td>
+                        <a>
+                            <h6>USD / KRW</h6>
+                        </a>
                         <div id="usrates" style="color:rgb(8, 31, 241)"></div>
                     </td>
                     <td>
-                        <div id="cnrates" style="color:rgb(241, 8, 27)"></div>
+                        <a>
+                            <h6>CNY / KRW</h6>
+                            <div id="cnrates" style="color:rgb(241, 8, 27)"></div>
                     </td>
                     <td>
-                        <div id="eurates" style="color:rgb(8, 241, 163)"></div>
+                        <a>
+                            <h6>EUR / KRW</h6>
+                            <div id="eurates" style="color:rgb(8, 241, 163)"></div>
                     </td>
                     <td>
-                        <div id="jprates" style="color:rgb(241, 237, 8)"></div>
+                        <a>
+                            <h6>JYP / KRW</h6>
+                            <div id="jprates" style="color:rgb(241, 237, 8)"></div>
                     </td>
                 </tr>
             </tbody>
@@ -246,7 +315,7 @@
     </div>
     <div class="wrap_ecotrand_title">
         <a>
-            <h3>주요지표</h3>
+
         </a>
     </div>
 
@@ -254,7 +323,7 @@
         <table class="table table-hover">
             <thead>
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                    <th scope="col">#</th>
+                    <th scope="col">주요지표</th>
                     <th scope="col">KOSPI</th>
                     <th scope="col">KOSDAQ</th>
                     <th scope="col">S&P500</th>
@@ -338,26 +407,26 @@
                 <h3>경제뉴스(포털)</h3>
             </a>
             <!-- <div class="card-columns" id="cards-box"> -->
-                <div class="card">
-                    <img class="card-img-top"
-                        src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                        alt="Card image cap">
-                    <div class="card-body">
-                        <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                        <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                        <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                    </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
-                <div class="card">
-                    <img class="card-img-top"
-                        src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                        alt="Card image cap">
-                    <div class="card-body">
-                        <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                        <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                        <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                    </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
+            </div>
             <!-- </div> -->
         </div>
         <div id="relative2">
@@ -365,26 +434,26 @@
                 <h3>경제뉴스(영상)</h3>
             </a>
             <!-- <div class="card-columns" id="cards-box"> -->
-                <div class="card">
-                    <img class="card-img-top"
-                        src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                        alt="Card image cap">
-                    <div class="card-body">
-                        <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                        <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                        <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                    </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
-                <div class="card">
-                    <img class="card-img-top"
-                        src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                        alt="Card image cap">
-                    <div class="card-body">
-                        <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                        <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                        <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                    </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
+            </div>
             <!-- </div> -->
         </div>
         <div id="relative3">
@@ -392,26 +461,26 @@
                 <h3>포트폴리오</h3>
             </a>
             <!-- <div class="card-columns" id="cards-box"> -->
-                <div class="card">
-                    <img class="card-img-top"
-                        src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                        alt="Card image cap">
-                    <div class="card-body">
-                        <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                        <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                        <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                    </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
-                <div class="card">
-                    <img class="card-img-top"
-                        src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                        alt="Card image cap">
-                    <div class="card-body">
-                        <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                        <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                        <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                    </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top"
+                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
+                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
+                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
+            </div>
             <!-- </div> -->
         </div>
     </div>
