@@ -41,7 +41,7 @@ def read_korindices():
    kospi_width = soup.findAll("td",class_="pid-37426-pcp")
    KOSPI_WIDTH = kospi_width[0].text                                      #지수 등락률
    #KOSDAQ-------------------------------------------------
-   kosdaq = soup.findAll("td",class_="pid-37426-last")
+   kosdaq = soup.findAll("td",class_="pid-38016-last")
    KOSDAQ = kosdaq[0].text                                                #코스닥 지수
    kosdaq_inde = soup.findAll("td",class_="pid-38016-pc")
    KOSDAQ_INDE = kosdaq_inde[0].text                                      #지수 변동폭
