@@ -37,6 +37,14 @@
             margin: 20px auto;
         } */
 
+        .stock_align {
+            /* width: 400px;
+            margin: 10px auto; */
+            text-align: center;
+            text-size : xx-small;
+            /* padding-bottom: 10px; */
+        }
+
         .wrap {
             width: 65%;
             margin: 0 auto;
@@ -134,6 +142,7 @@
         })
 
         $(document).ready(function () {
+
             listing()
         });
         // tabla onclick
@@ -149,31 +158,38 @@
 
         // 주식 종목 검색
         function searching() {
+            $('#stock').html('');
             let name = $('#searchingCode').val();
-            // if (6 != name.length || 6 != symbol.length) {
-            //     alert('종목 코드는 6자리 입니다.');
-            //     $('#searchingCode').focus();
-            //     return
-            // }
-            console.log(name)
+            let symbol = $('#searchingCode').val();
+
             if ('' == name) {
-                alert('종목 또는 코드를 정확히 입력하세요');
+                alert('종목 또는 코드가 입력되지 않았습니다.');
                 $('#searchingCode').focus();
                 return
             }
             $.ajax({
                 type: "POST",
                 url: '/api/search',
-                data: { 'name': name },
+                data: { 'name': name, 'symbol': symbol },
                 success: function (response) {
                     if (response['result'] == 'success') {
-                        let dfs = response['df_list'];
+                        let sts = response['st_list'];
                         let symbol = response['symbol'];
                         let name = response['name'];
                         $('#st_name').html(name);
                         $('#st_symbol').html(symbol);
-                        $('#stock').html(dfs);
+                        $('#staticBackdrop').modal('show');
+                        for (let v of sts) {
+                            $('#stock_date').append(`
+                                <td>${v.DATE} </td>
+                            `);
+                            $('#stock_data').append(`
+                                <td>${v.DATA} </td>
+                            `);
+                        }
                     }
+                    else
+                        alert('종목명을 확인해 주세요')
                 }
             })
             $('#searchingCode').val('');
@@ -323,11 +339,10 @@
                     </li>
                 </ul>
                 <form class="form-inline mt-2 mt-md-0">
-                    <input id="searchingCode" class="form-control mr-sm-2" type="text" placeholder="Enter code or name"
+                    <input id="searchingCode" class="form-control mr-sm-2" type="text" placeholder="symbol은 대문자로 "
                         aria-label="Search">
                     <!-- Button trigger modal -->
-                    <button type="button" onclick="searching()" class="btn btn-primary" data-toggle="modal"
-                        data-target="#staticBackdrop">
+                    <button type="button" onclick="searching()" class="btn btn-primary">
                         search
                     </button>
                 </form>
@@ -340,13 +355,14 @@
 
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- Modal 상단 종목, 코드 표시-->
                     <table class="table table-hover">
                         <tbody>
-                            <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                            <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand"
+                                class="stock_align">
                                 <td>
                                     <div id="st_name" style="color:black"></div>
                                 </td>
@@ -364,9 +380,16 @@
                 </div>
                 <div class="modal-body">
                     <!-- Modal 종목 값-->
-                    <div id="stock" style="color:black"></div>
-                    <!-- Modal 종목 값-->
+                    <table>
+                        <tr id="stock_date" class="stock_align"></tr>
+                        <tr id="stock_data" class="stock_align"></tr>
+                    </table>                 
                 </div>
+
+                <!-- <div style="width:800px"> chart...
+                    <canvas id="myChart"></canvas>
+                </div> -->
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Understood</button>
