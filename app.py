@@ -21,8 +21,8 @@ import numpy as np
 
 app = Flask(__name__)
 
-# client = MongoClient('localhost', 27017)
-client = MongoClient('mongodb://test:test@localhost',27017)
+client = MongoClient('localhost', 27017)
+#client = MongoClient('mongodb://test:test@localhost',27017)
 db = client.dbsparta
 
 @app.route('/')
@@ -110,24 +110,45 @@ def read_amrindices():
 
 @app.route('/api/search', methods=['POST'])
 def stock_search():
-   d = date.today() - timedelta(15)
+   d = date.today() - timedelta(10)
    Date = d.isoformat()
  # 1. 클라이언트가 전달한 'name', 'code' 를 name, code 변수에 넣습니다.
    name = request.form['name'] 
-   symbol = db.STOCK.find_one({'Name': name}, {'_id':False})
-   symbol = symbol['Symbol']
-
-   df = fdr.DataReader(symbol, Date)
+   # symbol = request.form['symbol']
+  
+   # symbol = db.STOCK.find_one({'$or': [{ 'name': name }]}, {'_id':False})
+   # print(symbol)
+   symbol = db.STOCK.find_one({"$or": [{'Name': name}, {'Symbol': name}]}, {'_id':False})
+   print(symbol)
+   symbol1 = symbol['Symbol']
+   symbol2 = symbol['Name']
+   df = fdr.DataReader(symbol1, Date)
+   dt = df.index.strftime('%Y-%m-%d').values
    df = df['Close']
    df = df.tolist()
+   st_list = []
+   for i in range(len(df)):
+      st ={
+         'DATE': dt[i],
+         'DATA' : df[i]
+      }
+      st_list.append(st)
+   
+   print(st_list)
+   return  jsonify({'result': 'success','st_list': st_list, 'symbol':symbol1, 'name':symbol2})
 
-   return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
-
-
-
-
-    
-
+   # if None != symbol :
+   #    symbol = symbol['Symbol']
+   #    df = fdr.DataReader(symbol, Date)
+   #    df = df['Close']
+   #    df = df.tolist()
+   #    return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
+   # else :
+   #    symbol = name
+   #    df = fdr.DataReader(symbol, Date)
+   #    df = df['Close']
+   #    df = df.tolist()
+   #    return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)
