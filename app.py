@@ -1,3 +1,4 @@
+
 from pymongo import MongoClient
 from flask import Flask, render_template, jsonify, request
 import FinanceDataReader as fdr
@@ -10,6 +11,13 @@ from urllib import parse
 from collections import OrderedDict
 from datetime import datetime
 import requests
+
+import FinanceDataReader as fdr
+from datetime import date, timedelta
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
 
 app = Flask(__name__)
 
@@ -99,16 +107,31 @@ def read_amrindices():
          }
    return  stock
 
-@app.route('/api/kospi', methods=['POST'])
-def chart_kospi():
-   # 1. 클라이언트가 전달한 name_give를 name_receive 변수에 넣습니다.
-   # 2. mystar 목록에서 find_one으로 name이 name_receive와 일치하는 star를 찾습니다.
-   # 3. star의 like 에 1을 더해준 new_like 변수를 만듭니다.
-   # 4. mystar 목록에서 name이 name_receive인 문서의 like 를 new_like로 변경합니다.
-   # 참고: '$set' 활용하기!
-   # 5. 성공하면 success 메시지를 반환합니다.
-   return jsonify({'result': 'success','msg':'chart 연결되었습니다!'})   
+@app.route('/api/search', methods=['POST'])
+def stock_search():
+   d = date.today() - timedelta(15)
+   Date = d.isoformat()
+ # 1. 클라이언트가 전달한 'name', 'code' 를 name, code 변수에 넣습니다.
+   name = request.form['name'] 
+   symbol = db.STOCK.find_one({'Name': name}, {'_id':False})
+   symbol = symbol['Symbol']
+
+   df = fdr.DataReader(symbol, Date)
+   df = df['Close']
+   df = df.tolist()
+
+   return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
+
+
+
+
+    
+
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)
+
+
+
+
 
