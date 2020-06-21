@@ -8,19 +8,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet">
     <!-- Required meta tags -->
-    <meta charset="utf-8">
+    <!-- <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet"> -->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <!-- JQuery를 import 합니다 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
 
+    <!-- JQuery를 import 합니다 -->
     <title>파피봇과 경제 생활 | 개인 프로젝트</title>
-
     <style>
-        .title {
+        /* .title {
             margin: auto;
             background-image: url();
             background-position: center;
@@ -30,7 +35,7 @@
             color: white;
             border-radius: 10px;
             margin: 20px auto;
-        }
+        } */
 
         .wrap {
             width: 65%;
@@ -69,7 +74,8 @@
             width: 1200px;
             margin: 10px auto;
             text-align: center;
-            padding-bottom: 10px;
+            /* padding-bottom: 10px; */
+            padding-top: 50px;
         }
 
         .wrap_currency_title {
@@ -88,25 +94,34 @@
         #static {
             width: 400px;
             height: 600px;
-            background-color: white;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: center;
+            /* background-color: white; */
         }
 
         #relative2 {
             width: 400px;
             height: 600px;
-            background-color: white;
+            padding-left: 5px;
+            padding-right: 5px;
+            /* background-color: white; */
             position: relative;
             top: -600px;
             left: 400px;
+            text-align: center;
         }
 
         #relative3 {
             width: 400px;
             height: 600px;
-            background-color: white;
+            padding-left: 5px;
+            padding-right: 5px;
+            /* background-color: white; */
             position: relative;
             top: -1200px;
             left: 800px;
+            text-align: center;
         }
 
 
@@ -114,6 +129,10 @@
     </style>
 
     <script>
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').trigger('focus')
+        })
+
         $(document).ready(function () {
             listing()
         });
@@ -128,10 +147,37 @@
             alert(trObj.id);
         }
 
-        $('#mymodal').on('shown.bs.modal', function () {
-            $('#myInput').trigger('focus')
-        })
-
+        // 주식 종목 검색
+        function searching() {
+            let name = $('#searchingCode').val();
+            // if (6 != name.length || 6 != symbol.length) {
+            //     alert('종목 코드는 6자리 입니다.');
+            //     $('#searchingCode').focus();
+            //     return
+            // }
+            console.log(name)
+            if ('' == name) {
+                alert('종목 또는 코드를 정확히 입력하세요');
+                $('#searchingCode').focus();
+                return
+            }
+            $.ajax({
+                type: "POST",
+                url: '/api/search',
+                data: { 'name': name },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let dfs = response['df_list'];
+                        let symbol = response['symbol'];
+                        let name = response['name'];
+                        $('#st_name').html(name);
+                        $('#st_symbol').html(symbol);
+                        $('#stock').html(dfs);
+                    }
+                }
+            })
+            $('#searchingCode').val('');
+        }
         // 페이지 로딩시 화면 표시
         function listing() {
             $.ajax({
@@ -166,6 +212,28 @@
                     $('#kosdaq').html(KOSDAQ);
                     $('#kosdaq_inde').html(KOSDAQ_INDE);
                     $('#kosdaq_width').html(KOSDAQ_WIDTH);
+
+                    if (KOSPI_INDE > 0) {
+                        $('#kospi_inde').css('color', 'red');
+                    } else {
+                        $('#kospi_inde').css('color', 'blue');
+                    }
+                    if (KOSPI_WIDTH.replace('%', '') > 0) {
+                        $('#kospi_width').css('color', 'red');
+                    } else {
+                        $('#kospi_width').css('color', 'blue');
+                    }
+                    if (KOSDAQ_INDE > 0) {
+                        $('#kosdaq_inde').css('color', 'red');
+                    } else {
+                        $('#kosdaq_inde').css('color', 'blue');
+                    }
+                    if (KOSDAQ_WIDTH.replace('%', '') > 0) {
+                        $('#kosdaq_width').css('color', 'red');
+                    } else {
+                        $('#kosdaq_width').css('color', 'blue');
+                    }
+
                 }
             })
             $.ajax({
@@ -191,30 +259,50 @@
                     $('#dji').html(DJI);
                     $('#dji_inde').html(DJI_INDE);
                     $('#dji_width').html(DJI_WIDTH);
+
+                    if (SNP_INDE < 0) {
+                        $('#snp_inde').css('color', 'red');
+                    } else {
+                        $('#snp_inde').css('color', 'blue');
+                    }
+                    if (SNP_WIDTH.replace('%', '') < 0) {
+                        $('#snp_width').css('color', 'red');
+                    } else {
+                        $('#snp_width').css('color', 'blue');
+                    }
+
+                    if (NASDAQ_INDE < 0) {
+                        $('#nasdaq_inde').css('color', 'red');
+                    } else {
+                        $('#nasdaq_inde').css('color', 'blue');
+                    }
+                    if (NASDAQ_WIDTH.replace('%', '') < 0) {
+                        $('#nasdaq_width').css('color', 'red');
+                    } else {
+                        $('#nasdaq_width').css('color', 'blue');
+                    }
+
+                    if (DJI_INDE < 0) {
+                        $('#dji_inde').css('color', 'red');
+                    } else {
+                        $('#dji_inde').css('color', 'blue');
+                    }
+                    if (DJI_WIDTH.replace('%', '') < 0) {
+                        $('#dji_width').css('color', 'red');
+                    } else {
+                        $('#dji_width').css('color', 'blue');
+                    }
+
                 }
             })
         }
-        // function kospi_chare(kospi) {
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: '/api/kospi',
-        //         data: {'kospi' : kospi },
-        //         success: function (response) {
-        //             if (response['result'] == 'success') {
-        //                 let msg = response['msg'];
-        //                 alert(msg);
-        //                 window.location.reload();
-        //             }
-        //         }
-        //     });
-        // }
+
     </script>
 </head>
 
 <body>
-
     <header>
-        <!-- Fixed navbar -->
+        Fixed navbar -->
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             <a class="navbar-brand" href="#">Digital Nomad</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
@@ -231,39 +319,53 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="https://investing.com">investing</a>
-                        <!-- <a class="nav-link disabled" href="https://investing.com" tabindex="-1" aria-disabled="true">Disabled</a> -->
+
                     </li>
                 </ul>
                 <form class="form-inline mt-2 mt-md-0">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Enter code" aria-label="Search">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+                    <input id="searchingCode" class="form-control mr-sm-2" type="text" placeholder="Enter code or name"
+                        aria-label="Search">
+                    <!-- Button trigger modal -->
+                    <button type="button" onclick="searching()" class="btn btn-primary" data-toggle="modal"
+                        data-target="#staticBackdrop">
                         search
                     </button>
                 </form>
             </div>
         </nav>
-        <!-- Button trigger modal -->
-
-
-
-
     </header>
-    <div class="wrap_currency_title">
-        <a> </a>
-    </div>
-    <!-- Modal -->
+
+
+
+
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <!-- Modal 상단 종목, 코드 표시-->
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                                <td>
+                                    <div id="st_name" style="color:black"></div>
+                                </td>
+                                <td>
+                                    <div id="st_symbol" style="color:black"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Modal 상단 종목, 코드 표시-->
+                    <!-- <h5 class="modal-title" id="staticBackdropLabel"></h5> -->
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <!-- Modal 종목 값-->
+                    <div id="stock" style="color:black"></div>
+                    <!-- Modal 종목 값-->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -272,7 +374,6 @@
             </div>
         </div>
     </div>
-
 
     <div class="wrap_currency">
         <table class="table table-hover">
@@ -292,22 +393,22 @@
                         <a>
                             <h6>USD / KRW</h6>
                         </a>
-                        <div id="usrates" style="color:rgb(8, 31, 241)"></div>
+                        <div id="usrates" style="color:black"></div>
                     </td>
                     <td>
                         <a>
                             <h6>CNY / KRW</h6>
-                            <div id="cnrates" style="color:rgb(241, 8, 27)"></div>
+                            <div id="cnrates" style="color:black"></div>
                     </td>
                     <td>
                         <a>
                             <h6>EUR / KRW</h6>
-                            <div id="eurates" style="color:rgb(8, 241, 163)"></div>
+                            <div id="eurates" style="color:black"></div>
                     </td>
                     <td>
                         <a>
                             <h6>JYP / KRW</h6>
-                            <div id="jprates" style="color:rgb(241, 237, 8)"></div>
+                            <div id="jprates" style="color:black"></div>
                     </td>
                 </tr>
             </tbody>
@@ -337,65 +438,65 @@
                     <td align="center"
                         onClick="window.open('https://finance.yahoo.com/quote/%5EKS11?p=^KS11&.tsrc=fin-srch');"
                         style="cursor:pointer">
-                        <div id="kospi" style="color:rgb(8, 31, 241)"></div>
+                        <div id="kospi" style="color:black"></div>
                     </td>
                     <td align="center"
                         onClick="window.open('https://finance.yahoo.com/quote/%5EKOSDAQ?p=^KOSDAQ&.tsrc=fin-srch');"
                         style="cursor:pointer">
-                        <div id="kosdaq" style="color:rgb(241, 8, 27)"></div>
+                        <div id="kosdaq" style="color:black"></div>
                     </td>
                     <td align="center"
                         onClick="window.open('https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC&.tsrc=fin-srch');"
                         style="cursor:pointer">
-                        <div id="snp" style="color:rgb(8, 241, 163)"></div>
+                        <div id="snp" style="color:black"></div>
                     </td>
                     <td align="center"
                         onClick="window.open('https://finance.yahoo.com/quote/%5EIXIC?p=^IXIC&.tsrc=fin-srch');"
                         style="cursor:pointer">
-                        <div id="nasdaq" style="color:rgb(241, 237, 8)"></div>
+                        <div id="nasdaq" style="color:black"></div>
                     </td>
                     <td align="center"
                         onClick="window.open('https://finance.yahoo.com/quote/%5EDJI?p=^DJI&.tsrc=fin-srch');"
                         style="cursor:pointer">
-                        <div id="dji" style="color:rgb(241, 237, 8)"></div>
+                        <div id="dji" style="color:black"></div>
                     </td>
                 </tr>
 
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">변동</th>
                     <td>
-                        <div id="kospi_inde" style="color:rgb(8, 31, 241)"></div>
+                        <div id="kospi_inde" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="kosdaq_inde" style="color:rgb(241, 8, 27)"></div>
+                        <div id="kosdaq_inde" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="snp_inde" style="color:rgb(241, 8, 27)"></div>
+                        <div id="snp_inde" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="nasdaq_inde" style="color:rgb(241, 8, 27)"></div>
+                        <div id="nasdaq_inde" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="dji_inde" style="color:rgb(241, 8, 27)"></div>
+                        <div id="dji_inde" style="color:black"></div>
                     </td>
                 </tr>
 
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">변동%</th>
                     <td>
-                        <div id="kospi_width" style="color:rgb(8, 31, 241)"></div>
+                        <div id="kospi_width" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="kosdaq_width" style="color:rgb(241, 8, 27)"></div>
+                        <div id="kosdaq_width" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="snp_width" style="color:rgb(241, 8, 27)"></div>
+                        <div id="snp_width" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="nasdaq_width" style="color:rgb(241, 8, 27)"></div>
+                        <div id="nasdaq_width" style="color:black"></div>
                     </td>
                     <td>
-                        <div id="dji_width" style="color:rgb(241, 8, 27)"></div>
+                        <div id="dji_width" style="color:black"></div>
                     </td>
                 </tr>
             </tbody>
@@ -461,26 +562,58 @@
                 <h3>포트폴리오</h3>
             </a>
             <!-- <div class="card-columns" id="cards-box"> -->
-            <div class="card">
-                <img class="card-img-top"
-                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                    alt="Card image cap">
-                <div class="card-body">
-                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                </div>
-            </div>
-            <div class="card">
-                <img class="card-img-top"
-                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                    alt="Card image cap">
-                <div class="card-body">
-                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                </div>
-            </div>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                        <th scope="col">종목명</th>
+                        <th scope="col">주가</th>
+                        <th scope="col">주당배당금</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                        <th scope="row">tesla</th>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+
+                    </tr>
+
+                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                        <th scope="row">tesla</th>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                    </tr>
+                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                        <th scope="row">tesla</th>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                    </tr>
+                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                        <th scope="row">tesla</th>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                        <td>
+                            <h6>tesla</h6>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
             <!-- </div> -->
         </div>
     </div>
