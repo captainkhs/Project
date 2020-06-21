@@ -1,9 +1,9 @@
 import FinanceDataReader as fdr
 
 from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb://test:test@localhost',27017)
 db = client.dbsparta
-db.user.drop()
+# db.user.drop()
 
 # 한국
 # 심볼	거래소
@@ -17,7 +17,7 @@ db.user.drop()
 # NYSE	뉴욕 증권거래소 종목
 # AMEX	AMEX 종목
 # SP500	S&P 500 종목
-df = fdr.StockListing('S&P500')
+df = fdr.StockListing('KRX')
 symbol = df['Symbol']
 name = df['Name']
 
