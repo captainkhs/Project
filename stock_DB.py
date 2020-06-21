@@ -17,7 +17,7 @@ db = client.dbsparta
 # NYSE	뉴욕 증권거래소 종목
 # AMEX	AMEX 종목
 # SP500	S&P 500 종목
-df = fdr.StockListing('AMEX')
+df = fdr.StockListing('S&P500')
 symbol = df['Symbol']
 name = df['Name']
 
