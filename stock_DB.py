@@ -3,7 +3,7 @@ import FinanceDataReader as fdr
 from pymongo import MongoClient
 client = MongoClient('mongodb://test:test@localhost',27017)
 db = client.dbsparta
-# db.user.drop()
+
 
 # 한국
 # 심볼	거래소
