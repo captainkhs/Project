@@ -21,28 +21,19 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 
     <!-- JQuery를 import 합니다 -->
     <title>파피봇과 경제 생활 | 개인 프로젝트</title>
     <style>
-        /* .title {
-            margin: auto;
-            background-image: url();
-            background-position: center;
-            background-size: cover;
-            width: 300px;
-            height: 300px;
-            color: white;
-            border-radius: 10px;
-            margin: 20px auto;
-        } */
-
         .stock_align {
-            /* width: 400px;
-            margin: 10px auto; */
+            width: 500px;
+            margin: auto;
             text-align: center;
-            text-size : xx-small;
-            /* padding-bottom: 10px; */
+            font-size: small;
         }
 
         .wrap {
@@ -142,7 +133,6 @@
         })
 
         $(document).ready(function () {
-
             listing()
         });
         // tabla onclick
@@ -158,9 +148,10 @@
 
         // 주식 종목 검색
         function searching() {
-            $('#stock').html('');
+
+            $('#stock_date').html('');
+            $('#stock_data').html('');
             let name = $('#searchingCode').val();
-            let symbol = $('#searchingCode').val();
 
             if ('' == name) {
                 alert('종목 또는 코드가 입력되지 않았습니다.');
@@ -170,30 +161,71 @@
             $.ajax({
                 type: "POST",
                 url: '/api/search',
-                data: { 'name': name, 'symbol': symbol },
+                data: { 'name': name },
                 success: function (response) {
                     if (response['result'] == 'success') {
                         let sts = response['st_list'];
+                        let sts_new = sts.slice(-7,);
                         let symbol = response['symbol'];
                         let name = response['name'];
                         $('#st_name').html(name);
                         $('#st_symbol').html(symbol);
                         $('#staticBackdrop').modal('show');
-                        for (let v of sts) {
+                        for (let v of sts_new) {
                             $('#stock_date').append(`
-                                <td>${v.DATE} </td>
-                            `);
+                                ${v.DATE} `);
                             $('#stock_data').append(`
-                                <td>${v.DATA} </td>
-                            `);
+                                 ${v.DATA} `);
                         }
                     }
                     else
                         alert('종목명을 확인해 주세요')
                 }
             })
+
             $('#searchingCode').val('');
+
+            var ctx = document.getElementById('myChart');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [12, 19, 3, 5, 2, 3],                
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    },
+                }
+            });
+
+            //데이터 추가
+            document.getElementById('reData').onclick = function () {
+
+                //라벨추가
+                mychart.data.labels.push(sts['DATE'])
+
+                //데이터셋 수 만큼 반복
+                var dataset = mychart.data.datasets;
+                for (let i of sts) {
+                    //데이터셋의 데이터 추가
+                    dataset[i].data.push(sts['DATA']);
+                }
+                myChart.update();	//차트 업데이트
+            }
         }
+
+
+
         // 페이지 로딩시 화면 표시
         function listing() {
             $.ajax({
@@ -286,7 +318,6 @@
                     } else {
                         $('#snp_width').css('color', 'blue');
                     }
-
                     if (NASDAQ_INDE < 0) {
                         $('#nasdaq_inde').css('color', 'red');
                     } else {
@@ -297,7 +328,6 @@
                     } else {
                         $('#nasdaq_width').css('color', 'blue');
                     }
-
                     if (DJI_INDE < 0) {
                         $('#dji_inde').css('color', 'red');
                     } else {
@@ -312,6 +342,7 @@
                 }
             })
         }
+
 
     </script>
 </head>
@@ -342,7 +373,7 @@
                     <input id="searchingCode" class="form-control mr-sm-2" type="text" placeholder="symbol은 대문자로 "
                         aria-label="Search">
                     <!-- Button trigger modal -->
-                    <button type="button" onclick="searching()" class="btn btn-primary">
+                    <button type="button" onclick="searching()" id="reData" class="btn btn-primary">
                         search
                     </button>
                 </form>
@@ -359,37 +390,35 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- Modal 상단 종목, 코드 표시-->
-                    <table class="table table-hover">
-                        <tbody>
-                            <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand"
-                                class="stock_align">
-                                <td>
-                                    <div id="st_name" style="color:black"></div>
-                                </td>
-                                <td>
-                                    <div id="st_symbol" style="color:black"></div>
-                                </td>
-                            </tr>
-                        </tbody>
+                    <table>
+                        <td id="st_name" style="color:black"></td>
+                        <td id="st_symbol" style="color:black"></td> <!-- 괄호 표시 문의 할것-->
                     </table>
                     <!-- Modal 상단 종목, 코드 표시-->
-                    <!-- <h5 class="modal-title" id="staticBackdropLabel"></h5> -->
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <!-- Modal 종목 값-->
-                    <table>
-                        <tr id="stock_date" class="stock_align"></tr>
-                        <tr id="stock_data" class="stock_align"></tr>
-                    </table>                 
+                <div class="stock_align">
+                    <div class="modal-body">
+                        <!-- Modal 종목 값-->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>DATE</th>
+                                    <th id="stock_date"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>VLAUE</th>
+                                    <td id="stock_data"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-                <!-- <div style="width:800px"> chart...
-                    <canvas id="myChart"></canvas>
-                </div> -->
-
+                <canvas id="myChart" width="600" height="400"></canvas>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Understood</button>
@@ -400,15 +429,6 @@
 
     <div class="wrap_currency">
         <table class="table table-hover">
-            <!-- <thead>
-                <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                    <th scope="col">#</th>
-                    <th scope="col">USD / KRW</th>
-                    <th scope="col">CNY / KRW</th>
-                    <th scope="col">EUR / KRW</th>
-                    <th scope="col">JPY / KRW</th>
-                </tr>
-            </thead> -->
             <tbody>
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="row">환율정보</th>
@@ -444,7 +464,7 @@
     </div>
 
     <div class="wrap_ecotrand">
-        <table class="table table-hover">
+        <!-- <table class="table table-hover">
             <thead>
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="col">주요지표</th>
@@ -523,7 +543,7 @@
                     </td>
                 </tr>
             </tbody>
-        </table>
+        </table> -->
     </div>
     <div class="wrap_box">
         <div id="static">
@@ -541,16 +561,6 @@
                     <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
                 </div>
             </div>
-            <div class="card">
-                <img class="card-img-top"
-                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                    alt="Card image cap">
-                <div class="card-body">
-                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                </div>
-            </div>
             <!-- </div> -->
         </div>
         <div id="relative2">
@@ -558,16 +568,6 @@
                 <h3>경제뉴스(영상)</h3>
             </a>
             <!-- <div class="card-columns" id="cards-box"> -->
-            <div class="card">
-                <img class="card-img-top"
-                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                    alt="Card image cap">
-                <div class="card-body">
-                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                </div>
-            </div>
             <div class="card">
                 <img class="card-img-top"
                     src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
