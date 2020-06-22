@@ -110,16 +110,11 @@ def read_amrindices():
 
 @app.route('/api/search', methods=['POST'])
 def stock_search():
-   d = date.today() - timedelta(10)
+   d = date.today() - timedelta(25)
    Date = d.isoformat()
- # 1. 클라이언트가 전달한 'name', 'code' 를 name, code 변수에 넣습니다.
    name = request.form['name'] 
-   # symbol = request.form['symbol']
-  
-   # symbol = db.STOCK.find_one({'$or': [{ 'name': name }]}, {'_id':False})
-   # print(symbol)
    symbol = db.STOCK.find_one({"$or": [{'Name': name}, {'Symbol': name}]}, {'_id':False})
-   print(symbol)
+   # print(symbol)
    symbol1 = symbol['Symbol']
    symbol2 = symbol['Name']
    df = fdr.DataReader(symbol1, Date)
@@ -129,7 +124,7 @@ def stock_search():
    st_list = []
    for i in range(len(df)):
       st ={
-         'DATE': dt[i],
+         'DATE': dt[i][5:],
          'DATA' : df[i]
       }
       st_list.append(st)
