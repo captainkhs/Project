@@ -3,10 +3,10 @@ from pymongo import MongoClient
 from flask import Flask, render_template, jsonify, request
 import FinanceDataReader as fdr
 import datetime, time
-
+import schedule
 import urllib.request
 from bs4 import BeautifulSoup
-import json
+import json 
 from urllib import parse
 from collections import OrderedDict
 from datetime import datetime
@@ -18,6 +18,10 @@ from datetime import date, timedelta
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from oauth2client.tools import argparser
 
 app = Flask(__name__)
 
@@ -144,6 +148,51 @@ def stock_search():
    #    df = df['Close']
    #    df = df.tolist()
    #    return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
+
+@app.route('/youtube', methods=['GET'])
+def read_youtube():
+   id = db.videoId.find({}, {'_id':False})
+   id = id[0]
+   print(id)
+   return  jsonify({'result': 'success','id': id})
+
+# def job():
+#    DEVELOPER_KEY = ""
+#    YOUTUBE_API_SERVICE_NAME = "youtube"
+#    YOUTUBE_API_VERSION = "v3"
+#    # build(googleapiclient.discovery) 객체 생성
+#    youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
+#    # 검색결과 크롤링
+#    search_response = youtube.search().list(
+#       q = "미국주식",
+#       order = "date",
+#       part = "snippet",
+#       maxResults = 10
+#       ).execute()
+#    videos = []
+#    channels = []
+#    playlists = []
+#    for search_result in search_response.get("items", []):
+#       if search_result["id"]["kind"] == "youtube#video":
+#          videos.append("%s $(%s)" % (search_result["snippet"]["title"],search_result["id"]["videoId"]))
+        
+#       elif search_result["id"]["kind"] == "youtube#channel":
+#          channels.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["channelID"]))
+        
+#       elif search_result["id"]["kind"] == "youtube#playlist":
+#          playlists.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["playlistID"]))
+#    doc = {
+#          'id' : videos
+#          }   
+#    db.videoId.insert_one(doc)
+#    print('yotube db 저장')
+
+
+# def run():
+#    schedule.every().day.at('13:00').do(job) # 매일 09:00 마다 job 함수를 실행  자동 실행 안되는거 질문
+#    # schedule.every(10).second.do(job)
+#    while True:
+#       schedule.run_pending()
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)
