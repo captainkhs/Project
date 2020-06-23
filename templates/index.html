@@ -7,10 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet">
-    <!-- Required meta tags -->
-    <!-- <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Song+Myung&display=swap" rel="stylesheet"> -->
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -21,12 +18,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <!-- Chart -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 
-    <!-- JQuery를 import 합니다 -->
     <title>파피봇과 경제 생활 | 개인 프로젝트</title>
     <style>
         .stock_align {
@@ -123,7 +120,6 @@
             text-align: center;
         }
 
-
         /* 배경위치  */
     </style>
 
@@ -135,7 +131,7 @@
         $(document).ready(function () {
             listing()
         });
-        // tabla onclick
+        // table onclick
         function changeTrColor(trObj, oldColor, newColor) {
             trObj.style.backgroundColor = newColor;
             trObj.onmouseout = function () {
@@ -148,11 +144,9 @@
 
         // 주식 종목 검색
         function searching() {
-
             $('#stock_date').html('');
             $('#stock_data').html('');
             let name = $('#searchingCode').val();
-
             if ('' == name) {
                 alert('종목 또는 코드가 입력되지 않았습니다.');
                 $('#searchingCode').focus();
@@ -182,51 +176,47 @@
                         alert('종목명을 확인해 주세요')
                 }
             })
-
             $('#searchingCode').val('');
 
-            var ctx = document.getElementById('myChart');
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                    datasets: [{
-                        label: '# of Votes',
-                        data: [12, 19, 3, 5, 2, 3],                
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: false,
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    },
-                }
-            });
-
-            //데이터 추가
-            document.getElementById('reData').onclick = function () {
-
-                //라벨추가
-                mychart.data.labels.push(sts['DATE'])
-
-                //데이터셋 수 만큼 반복
-                var dataset = mychart.data.datasets;
-                for (let i of sts) {
-                    //데이터셋의 데이터 추가
-                    dataset[i].data.push(sts['DATA']);
-                }
-                myChart.update();	//차트 업데이트
-            }
         }
+        // function Chart() { // Chart 
+        //     var ctx = document.getElementById('myChart').getContext('2d');
+        //     var myChart = new Chart(ctx, {
+        //         type: 'line',
+        //         data: {
+        //             labels: [''],
+        //             datasets: [{
+        //                 label: '# of Votes',
+        //                 data: [],
+        //                 borderWidth: 1
+        //             }]
+        //         },
+        //         options: {
+        //             scales: {
+        //                 yAxes: [{
+        //                     ticks: {
+        //                         beginAtZero: true
+        //                     }
+        //                 }]
+        //             }
+        //         }
+        //     });
+        // }
+        // //데이터 추가
+        // document.getElementById('reData').onclick = function () {
 
+        //     //라벨추가
+        //     mychart.data.labels.push(sts['DATE'])
 
-
-        // 페이지 로딩시 화면 표시
+        //     //데이터셋 수 만큼 반복
+        //     var dataset = mychart.data.datasets;
+        //     for (let i of sts) {
+        //         //데이터셋의 데이터 추가
+        //         dataset[i].data.push(sts['DATA']);
+        //     }
+        //     myChart.update();	//차트 업데이트
+        // }
+        // // 페이지 로딩시 화면 표시
         function listing() {
             $.ajax({
                 type: "GET",
@@ -341,8 +331,33 @@
 
                 }
             })
+
+            $.ajax({
+                type: "GET",
+                url: '/currency',
+                data: {},
+                success: function (response) {
+                    let ids = response['id'];
+                    console.log(ids[0])
+                    // for (let id of ids) {
+                    //     console.log(id)
+                    //     }
+                  
+             
+                    // $('#video').html(id);
+                }
+            })
+
+
         }
 
+
+
+        // function Chart() {
+
+        //     //현재창에서 다른페이지로 이동합니다.
+        //     window.open("https://finance.yahoo.com/quote/AAPL", "종목정보", "width=800, height=900, toolbar=no, menubar=no, scrollbars=no, resizable=yes");
+        // }
 
     </script>
 </head>
@@ -373,7 +388,7 @@
                     <input id="searchingCode" class="form-control mr-sm-2" type="text" placeholder="symbol은 대문자로 "
                         aria-label="Search">
                     <!-- Button trigger modal -->
-                    <button type="button" onclick="searching()" id="reData" class="btn btn-primary">
+                    <button type="button" onclick="searching()" class="btn btn-primary" data-target="#staticBackdrop">
                         search
                     </button>
                 </form>
@@ -386,7 +401,7 @@
 
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- Modal 상단 종목, 코드 표시-->
@@ -394,7 +409,6 @@
                         <td id="st_name" style="color:black"></td>
                         <td id="st_symbol" style="color:black"></td> <!-- 괄호 표시 문의 할것-->
                     </table>
-                    <!-- Modal 상단 종목, 코드 표시-->
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -418,14 +432,40 @@
                         </table>
                     </div>
                 </div>
-                <canvas id="myChart" width="600" height="400"></canvas>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Understood</button>
+                    <!-- <button type="button" onclick="Chart()" id="reData" class="btn btn-primary" data-toggle="modal"
+                        data-target="#exampleModal">Chart</button> -->
+                    <!-- <button type="button" class="btn btn-secondary" ><a href="https://finance.yahoo.com/" style="color:white">Chart</a></button> -->
+                    <!-- <button type="button" class="btn btn-secondary" onclick="Chart()">Chart</button> -->
+
+                    <button type="button" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="myChart" width="600" height="400"></canvas>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
 
     <div class="wrap_currency">
         <table class="table table-hover">
