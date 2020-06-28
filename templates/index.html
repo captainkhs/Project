@@ -33,7 +33,6 @@
     <title>파피봇과 경제 생활 | 개인 프로젝트</title>
     <style>
         .stock_align {
-            width: 500px;
             margin: auto;
             text-align: center;
             font-size: small;
@@ -54,6 +53,11 @@
 
         .wrap_box {
             width: 1200px;
+            margin: auto;
+        }
+
+        .wrap_modal {
+            width: 700px;
             margin: auto;
         }
 
@@ -94,23 +98,10 @@
 
         /* 배경위치  */
         #static {
-            width: 400px;
+            width: 800px;
             height: 600px;
             padding-left: 5px;
             padding-right: 5px;
-            text-align: center;
-            /* background-color: white; */
-        }
-
-        #relative2 {
-            width: 400px;
-            height: 600px;
-            padding-left: 5px;
-            padding-right: 5px;
-            /* background-color: white; */
-            position: relative;
-            top: -600px;
-            left: 400px;
             text-align: center;
         }
 
@@ -119,14 +110,44 @@
             height: 600px;
             padding-left: 5px;
             padding-right: 5px;
-            /* background-color: white; */
+
             position: relative;
-            top: -1200px;
+            top: -600px;
             left: 800px;
             text-align: center;
         }
 
+        #relative4 {
+            width: 300px;
+            height: 600px;
+            padding-left: 5px;
+            padding-right: 5px;
+
+            position: relative;
+            top: -1200px;
+            left: 1200px;
+            text-align: center;
+        }
+
         /* 배경위치  */
+
+        #static_news {
+            width: 150px;
+            height: 100px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        #relative_news {
+            width: 600px;
+            height: 100px;
+            padding-left: 5px;
+            padding-right: 5px;
+            position: relative;
+            top: -100px;
+            left: 150px;
+
+        }
     </style>
 
     <script>
@@ -135,7 +156,8 @@
         })
 
         $(document).ready(function () {
-            listing()
+            listing();
+
         });
         // table onclick
         function changeTrColor(trObj, oldColor, newColor) {
@@ -166,15 +188,16 @@
                 success: function (response) {
                     if (response['result'] == 'success') {
                         let sts = response['st_list'];
-                        let sts_new = sts.slice(-10,);
+                        let sts_new = sts.slice(-12,);
                         let symbol = response['symbol'];
                         let name = response['name'];
                         $('#st_name').html(name);
-                        $('#st_symbol').html(symbol);
+                        $('#st_symbol').html('/' + symbol);
                         $('#staticBackdrop').modal('show');
+
                         for (let v of sts_new) {
-                            $('#stock_date').append(`${v.DATE}`);
-                            $('#stock_data').append(`${v.DATA}`);
+                            $('#stock_date').append(`<th>${v.DATE}</th>`);
+                            $('#stock_data').append(`<td>${v.DATA}</td>`);
                         }
                         let date_list = [];
                         let data_list = [];
@@ -231,21 +254,21 @@
 
         // // 페이지 로딩시 화면 표시
         function listing() {
-            // $.ajax({
-            //     type: "GET",
-            //     url: '/currency',
-            //     data: {},
-            //     success: function (response) {
-            //         let usrate = response.USDKRW[0];
-            //         let cnrate = response.CNYKRW[0];
-            //         let eurate = response.EURKRW[0];
-            //         let jprate = response.JPYKRW[0];
-            //         $('#usrates').html(usrate);
-            //         $('#cnrates').html(cnrate);
-            //         $('#eurates').html(eurate);
-            //         $('#jprates').html(jprate);
-            //     }
-            // })
+            $.ajax({
+                type: "GET",
+                url: '/currency',
+                data: {},
+                success: function (response) {
+                    let usrate = response.USDKRW[0];
+                    let cnrate = response.CNYKRW[0];
+                    let eurate = response.EURKRW[0];
+                    let jprate = response.JPYKRW[0];
+                    $('#usrates').html(usrate);
+                    $('#cnrates').html(cnrate);
+                    $('#eurates').html(eurate);
+                    $('#jprates').html(jprate);
+                }
+            })
             $.ajax({
                 type: "GET",
                 url: '/korindices', // investing.com으로 부터 국내지수 크롤링
@@ -358,17 +381,19 @@
             })
             function make_news(title, link, news_body, image_url) {
                 $('#news-box').append(`
-                                        <div class="card">
-                                            <img onclick = "javascript:newin=window.open('about:blank'); 
-                                            newin.location.href='${link}';" style="cursor:pointer;" class="card-img-top" src='${image_url}'>
-                                            <div class="card-body">                                         
-                                            <class="card-title" onclick = "javascript:newin=window.open('about:blank'); 
-                                            newin.location.href='${link}';" style="cursor:pointer;">${title}</h5>
-                                            </div>
-                                            <div>
-                                            <p class="card-text comment">${news_body}.....</p>
-                                            </div>
-                                        </div>
+                            <div id="static_news">
+                                <img onclick = "javascript:newin=window.open('about:blank'); newin.location.href='${link}';" style="cursor:pointer;"  src='${image_url}' width="150", height="100">
+                            </div > 
+                            <div id="relative_news"> 
+                            <div>
+                                <h5 onclick="javascript:newin=window.open('about:blank'); newin.location.href='${link}';" style="cursor:pointer;">${title}</h5>
+                            </div>                            
+                            <div>
+                                <p>${news_body}.....</p>          
+                            </div>
+                            </div>
+                                          
+                                      
                                         `)
             }
             $.ajax({
@@ -399,22 +424,26 @@
             }
         }
         function save() {
-            let port_name = $('#st_name').val();
-            let port_symbol = $('#st_symbol').val();
+            let port_name = $('#st_name').text();
+            let port_symbol = $('#st_symbol').text();
+            alert(port_name);
             $.ajax({
                 type: "POST",
                 url: '/api/stockSave',
                 data: { 'name': port_name },
                 success: function (response) {
-                    console.log('port_list')
+                    if (response['result'] == 'success') {
+                        let port = response['port_list'];
+                        let port_new = port.slice(-1,);                   
+                        let port_name = response['port_name'];
+                        $('#port_name').append(port_name);                     
+                        for (let y of port_new) {
+                            $('#port_data').append(`${y.DATA}`);
+                        }
+                    }
                 }
             })
         }
-
-
-
-
-
     </script>
 </head>
 
@@ -457,7 +486,7 @@
 
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- Modal 상단 종목, 코드 표시-->
@@ -473,22 +502,22 @@
                     <div class="modal-body">
                         <!-- Modal 종목 값-->
                         <table class="table table-striped">
+
                             <thead>
-                                <tr>
-                                    <th>DATE</th>
-                                    <th id="stock_date"></th>
+                                <tr id="stock_date">
+                                    <!-- <th>DATE</th> -->
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th>VLAUE</th>
-                                    <td id="stock_data"></td>
+                                <tr id="stock_data">
+                                    <!-- <th>VLAUE</th> -->
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>
-                        <canvas id="myChart" width="400" height="400"></canvas>
+                        <canvas id="myChart"></canvas>
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -497,7 +526,6 @@
             </div>
         </div>
     </div>
-
     <div class="wrap_currency">
         <table class="table table-hover">
             <tbody>
@@ -621,49 +649,41 @@
             <a>
                 <h3>경제뉴스(포털)</h3>
             </a>
-            <!-- <div class="card-columns" id="cards-box"> -->
-            <div class="card" id="news-box">
-            </div>
-            <!-- </div> -->
-        </div>
-        <div id="relative2">
-            <a>
-                <h3>경제뉴스(영상)</h3>
-            </a>
-            <!-- <div class="card-columns" id="utube-box"> -->
-            <div class="card" id="utube-box">
-            </div>
-            <!-- </div> -->
+            <ul class="list-group" id="news-box">
+
+            </ul>
         </div>
         <div id="relative3">
             <a>
+                <h3>경제뉴스(영상)</h3>
+            </a>
+            <div class="card" id="utube-box">
+            </div>
+        </div>
+        <div id="relative4">
+            <a>
                 <h3>포트폴리오</h3>
             </a>
-            <!-- <div class="card-columns" id="cards-box"> -->
-
             <table class="table table-hover">
                 <thead>
                     <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                        <!-- <th scope="col">종목명</th> -->
+
                         <th scope="col">종목명</th>
                         <th scope="col">주가</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                        <!-- <th scope="row">tesla</th> -->
-                        <td>
-                            <h6>tesla</h6>
+
+                        <td id="port_name">
+                            <h6></h6>
                         </td>
-                        <td>
-                            <h6>tesla</h6>
+                        <td id="port_data">
+                            <h6></h6>
                         </td>
                     </tr>
                 </tbody>
             </table>
-
-
-            <!-- </div> -->
         </div>
     </div>
 
