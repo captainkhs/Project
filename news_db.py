@@ -4,7 +4,7 @@ import bs4.element
 import datetime
 
 from pymongo import MongoClient
-client = MongoClient('localhost',27017)
+client = MongoClient('mongodb://test:test@localhost',27017)
 db = client.dbsparta
 
 # '경제', '사회', '생활/문화', '세계', 'IT/과학'
@@ -80,9 +80,6 @@ def get_naver_news_top3():
 
     return news_dic
 
-news_dic = get_naver_news_top3()
-
-news_dic['eco'][0].keys()
 
 
     
