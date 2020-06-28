@@ -3,6 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+
+    <!-- og tag-->
+    <meta property="og:title" content="Pappibot의 Digital Nomad" />
+    <meta property="og:description" content="보고 있는 페이지의 내용 요약" />
+    <meta property="og:image" content="{{ url_for('static', filename='stock.jpg') }}" />
+
     <!-- table onclick -->
     <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -146,6 +152,7 @@
         function searching() {
             $('#stock_date').html('');
             $('#stock_data').html('');
+            $('#myChart').html('');
             let name = $('#searchingCode').val();
             if ('' == name) {
                 alert('종목 또는 코드가 입력되지 않았습니다.');
@@ -159,80 +166,86 @@
                 success: function (response) {
                     if (response['result'] == 'success') {
                         let sts = response['st_list'];
-                        let sts_new = sts.slice(-7,);
+                        let sts_new = sts.slice(-10,);
                         let symbol = response['symbol'];
                         let name = response['name'];
                         $('#st_name').html(name);
                         $('#st_symbol').html(symbol);
                         $('#staticBackdrop').modal('show');
                         for (let v of sts_new) {
-                            $('#stock_date').append(`
-                                ${v.DATE} `);
-                            $('#stock_data').append(`
-                                 ${v.DATA} `);
+                            $('#stock_date').append(`${v.DATE}`);
+                            $('#stock_data').append(`${v.DATA}`);
                         }
+                        let date_list = [];
+                        let data_list = [];
+                        for (let i of sts_new) {
+                            date_list.push(i.DATE);
+                            data_list.push(i.DATA);
+                        }
+                        console.log(date_list)
+                        console.log(data_list)
+                        var ctx = document.getElementById('myChart').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: date_list,
+                                datasets: [{
+                                    label: '# CHART',
+                                    data: data_list,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
                     }
                     else
                         alert('종목명을 확인해 주세요')
                 }
             })
             $('#searchingCode').val('');
-
         }
-        // function Chart() { // Chart 
-        //     var ctx = document.getElementById('myChart').getContext('2d');
-        //     var myChart = new Chart(ctx, {
-        //         type: 'line',
-        //         data: {
-        //             labels: [''],
-        //             datasets: [{
-        //                 label: '# of Votes',
-        //                 data: [],
-        //                 borderWidth: 1
-        //             }]
-        //         },
-        //         options: {
-        //             scales: {
-        //                 yAxes: [{
-        //                     ticks: {
-        //                         beginAtZero: true
-        //                     }
-        //                 }]
-        //             }
-        //         }
-        //     });
-        // }
-        // //데이터 추가
-        // document.getElementById('reData').onclick = function () {
 
-        //     //라벨추가
-        //     mychart.data.labels.push(sts['DATE'])
-
-        //     //데이터셋 수 만큼 반복
-        //     var dataset = mychart.data.datasets;
-        //     for (let i of sts) {
-        //         //데이터셋의 데이터 추가
-        //         dataset[i].data.push(sts['DATA']);
-        //     }
-        //     myChart.update();	//차트 업데이트
-        // }
         // // 페이지 로딩시 화면 표시
         function listing() {
-            $.ajax({
-                type: "GET",
-                url: '/currency',
-                data: {},
-                success: function (response) {
-                    let usrate = response.USDKRW[0];
-                    let cnrate = response.CNYKRW[0];
-                    let eurate = response.EURKRW[0];
-                    let jprate = response.JPYKRW[0];
-                    $('#usrates').html(usrate);
-                    $('#cnrates').html(cnrate);
-                    $('#eurates').html(eurate);
-                    $('#jprates').html(jprate);
-                }
-            })
+            // $.ajax({
+            //     type: "GET",
+            //     url: '/currency',
+            //     data: {},
+            //     success: function (response) {
+            //         let usrate = response.USDKRW[0];
+            //         let cnrate = response.CNYKRW[0];
+            //         let eurate = response.EURKRW[0];
+            //         let jprate = response.JPYKRW[0];
+            //         $('#usrates').html(usrate);
+            //         $('#cnrates').html(cnrate);
+            //         $('#eurates').html(eurate);
+            //         $('#jprates').html(jprate);
+            //     }
+            // })
             $.ajax({
                 type: "GET",
                 url: '/korindices', // investing.com으로 부터 국내지수 크롤링
@@ -250,7 +263,6 @@
                     $('#kosdaq').html(KOSDAQ);
                     $('#kosdaq_inde').html(KOSDAQ_INDE);
                     $('#kosdaq_width').html(KOSDAQ_WIDTH);
-
                     if (KOSPI_INDE > 0) {
                         $('#kospi_inde').css('color', 'red');
                     } else {
@@ -271,7 +283,6 @@
                     } else {
                         $('#kosdaq_width').css('color', 'blue');
                     }
-
                 }
             })
             $.ajax({
@@ -297,7 +308,6 @@
                     $('#dji').html(DJI);
                     $('#dji_inde').html(DJI_INDE);
                     $('#dji_width').html(DJI_WIDTH);
-
                     if (SNP_INDE < 0) {
                         $('#snp_inde').css('color', 'red');
                     } else {
@@ -328,36 +338,82 @@
                     } else {
                         $('#dji_width').css('color', 'blue');
                     }
-
                 }
             })
-
             $.ajax({
                 type: "GET",
-                url: '/currency',
+                url: '/news',
                 data: {},
                 success: function (response) {
-                    let ids = response['id'];
-                    console.log(ids[0])
-                    // for (let id of ids) {
-                    //     console.log(id)
-                    //     }
-                  
-             
-                    // $('#video').html(id);
+                    let news_list = response['news'];
+                    for (let news of news_list) {
+                        make_news(
+                            news.title,
+                            news.link,
+                            news.news_body,
+                            news.image_url,
+                        )
+                    }
                 }
             })
-
-
+            function make_news(title, link, news_body, image_url) {
+                $('#news-box').append(`
+                                        <div class="card">
+                                            <img onclick = "javascript:newin=window.open('about:blank'); 
+                                            newin.location.href='${link}';" style="cursor:pointer;" class="card-img-top" src='${image_url}'>
+                                            <div class="card-body">                                         
+                                            <class="card-title" onclick = "javascript:newin=window.open('about:blank'); 
+                                            newin.location.href='${link}';" style="cursor:pointer;">${title}</h5>
+                                            </div>
+                                            <div>
+                                            <p class="card-text comment">${news_body}.....</p>
+                                            </div>
+                                        </div>
+                                        `)
+            }
+            $.ajax({
+                type: "GET",
+                url: '/utube',
+                data: {},
+                success: function (response) {
+                    let utubes = response['utube'];
+                    for (let utube of utubes) {
+                        make_tube(
+                            utube.TITLE,
+                            utube.URL,
+                            utube.VIDEOID
+                        )
+                    }
+                }
+            })
+            function make_tube(TITLE, URL, VIDEOID) {
+                $('#utube-box').append(`
+                                        <div class="card">
+                                            <img onclick = "javascript:newin=window.open('about:blank'); 
+                                            newin.location.href='https://www.youtube.com/watch?v=${VIDEOID}';" style="cursor:pointer;" class="card-img-top"  src='${URL}'>
+                                            <div class="card-body">
+                                            <class="card-title">${TITLE}</h5>
+                                            </div>
+                                        </div>
+                                        `)
+            }
+        }
+        function save() {
+            let port_name = $('#st_name').val();
+            let port_symbol = $('#st_symbol').val();
+            $.ajax({
+                type: "POST",
+                url: '/api/stockSave',
+                data: { 'name': port_name },
+                success: function (response) {
+                    console.log('port_list')
+                }
+            })
         }
 
 
 
-        // function Chart() {
 
-        //     //현재창에서 다른페이지로 이동합니다.
-        //     window.open("https://finance.yahoo.com/quote/AAPL", "종목정보", "width=800, height=900, toolbar=no, menubar=no, scrollbars=no, resizable=yes");
-        // }
 
     </script>
 </head>
@@ -430,42 +486,17 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <canvas id="myChart" width="400" height="400"></canvas>
                     </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <!-- <button type="button" onclick="Chart()" id="reData" class="btn btn-primary" data-toggle="modal"
-                        data-target="#exampleModal">Chart</button> -->
-                    <!-- <button type="button" class="btn btn-secondary" ><a href="https://finance.yahoo.com/" style="color:white">Chart</a></button> -->
-                    <!-- <button type="button" class="btn btn-secondary" onclick="Chart()">Chart</button> -->
-
-                    <button type="button" class="btn btn-primary">Save</button>
+                    <button type="button" onclick="save()" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Modal -->
-    <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <canvas id="myChart" width="600" height="400"></canvas>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <div class="wrap_currency">
         <table class="table table-hover">
@@ -504,7 +535,7 @@
     </div>
 
     <div class="wrap_ecotrand">
-        <!-- <table class="table table-hover">
+        <table class="table table-hover">
             <thead>
                 <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
                     <th scope="col">주요지표</th>
@@ -583,7 +614,7 @@
                     </td>
                 </tr>
             </tbody>
-        </table> -->
+        </table>
     </div>
     <div class="wrap_box">
         <div id="static">
@@ -591,15 +622,7 @@
                 <h3>경제뉴스(포털)</h3>
             </a>
             <!-- <div class="card-columns" id="cards-box"> -->
-            <div class="card">
-                <img class="card-img-top"
-                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                    alt="Card image cap">
-                <div class="card-body">
-                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                </div>
+            <div class="card" id="news-box">
             </div>
             <!-- </div> -->
         </div>
@@ -607,16 +630,8 @@
             <a>
                 <h3>경제뉴스(영상)</h3>
             </a>
-            <!-- <div class="card-columns" id="cards-box"> -->
-            <div class="card">
-                <img class="card-img-top"
-                    src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
-                    alt="Card image cap">
-                <div class="card-body">
-                    <a href="#" class="card-title">여기 기사 제목이 들어가죠</a>
-                    <p class="card-text">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
-                    <p class="card-text comment">여기에 코멘트가 들어갑니다.</p>
-                </div>
+            <!-- <div class="card-columns" id="utube-box"> -->
+            <div class="card" id="utube-box">
             </div>
             <!-- </div> -->
         </div>
@@ -629,43 +644,14 @@
             <table class="table table-hover">
                 <thead>
                     <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
+                        <!-- <th scope="col">종목명</th> -->
                         <th scope="col">종목명</th>
                         <th scope="col">주가</th>
-                        <th scope="col">주당배당금</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                        <th scope="row">tesla</th>
-                        <td>
-                            <h6>tesla</h6>
-                        </td>
-                        <td>
-                            <h6>tesla</h6>
-                        </td>
-
-                    </tr>
-
-                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                        <th scope="row">tesla</th>
-                        <td>
-                            <h6>tesla</h6>
-                        </td>
-                        <td>
-                            <h6>tesla</h6>
-                        </td>
-                    </tr>
-                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                        <th scope="row">tesla</th>
-                        <td>
-                            <h6>tesla</h6>
-                        </td>
-                        <td>
-                            <h6>tesla</h6>
-                        </td>
-                    </tr>
-                    <tr onmouseover="javascript:changeTrColor(this, '#FFFFFF', '#F4FFFD')" style="cursor:hand">
-                        <th scope="row">tesla</th>
+                        <!-- <th scope="row">tesla</th> -->
                         <td>
                             <h6>tesla</h6>
                         </td>
