@@ -23,20 +23,23 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from oauth2client.tools import argparser
 
+import threading
+
 app = Flask(__name__)
 
 client = MongoClient('localhost', 27017)
 #client = MongoClient('mongodb://test:test@localhost',27017)
 db = client.dbsparta
 
+
 @app.route('/')
 def home():
    return render_template('index.html')
 
-@app.route('/currency', methods=['GET'])
-def read_currency():
-   r = requests.get('https://earthquake.kr:23490/query/USDKRW,CNYKRW,EURKRW,JPYKRW')
-   return  r.json()
+# @app.route('/currency', methods=['GET'])
+# def read_currency():
+#    r = requests.get('https://earthquake.kr:23490/query/USDKRW,CNYKRW,EURKRW,JPYKRW')
+#    return  r.json()
 
 @app.route('/korindices', methods=['GET'])
 def read_korindices():
@@ -136,68 +139,98 @@ def stock_search():
    print(st_list)
    return  jsonify({'result': 'success','st_list': st_list, 'symbol':symbol1, 'name':symbol2})
 
-   # if None != symbol :
-   #    symbol = symbol['Symbol']
-   #    df = fdr.DataReader(symbol, Date)
-   #    df = df['Close']
-   #    df = df.tolist()
-   #    return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
-   # else :
-   #    symbol = name
-   #    df = fdr.DataReader(symbol, Date)
-   #    df = df['Close']
-   #    df = df.tolist()
-   #    return  jsonify({'result': 'success','df_list': df, 'symbol':symbol, 'name':name})
+@app.route('/utube', methods=['GET'])
+def read_utube():
+   utube = list(db.videoList.find({},{'_id':False}))  
 
-@app.route('/youtube', methods=['GET'])
-def read_youtube():
-   id = db.videoId.find({}, {'_id':False})
-   id = id[0]
-   print(id)
-   return  jsonify({'result': 'success','id': id})
+   return  jsonify({'result': 'success','utube': utube})
 
 # def job():
-#    DEVELOPER_KEY = ""
-#    YOUTUBE_API_SERVICE_NAME = "youtube"
-#    YOUTUBE_API_VERSION = "v3"
-#    # build(googleapiclient.discovery) 객체 생성
-#    youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
-#    # 검색결과 크롤링
-#    search_response = youtube.search().list(
-#       q = "미국주식",
-#       order = "date",
-#       part = "snippet",
-#       maxResults = 10
-#       ).execute()
-#    videos = []
-#    channels = []
-#    playlists = []
-#    for search_result in search_response.get("items", []):
-#       if search_result["id"]["kind"] == "youtube#video":
-#          videos.append("%s $(%s)" % (search_result["snippet"]["title"],search_result["id"]["videoId"]))
-        
-#       elif search_result["id"]["kind"] == "youtube#channel":
-#          channels.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["channelID"]))
-        
-#       elif search_result["id"]["kind"] == "youtube#playlist":
-#          playlists.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["playlistID"]))
-#    doc = {
-#          'id' : videos
-#          }   
-#    db.videoId.insert_one(doc)
-#    print('yotube db 저장')
+#     DEVELOPER_KEY = "AIzaSyAmmHbqw6Dz1JH_qNs5IzTLy4gt7O7HAEo"
+#     YOUTUBE_API_SERVICE_NAME = "youtube"
+#     YOUTUBE_API_VERSION = "v3"  
+#     youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
+#     search_response = youtube.search().list(q = "미국주식", order = "date", part = "snippet", maxResults = 10).execute()
+#     videos = []
+#     channels = []
+#     playlists = []
+#     for search_result in search_response.get("items", []):
+#         if search_result["id"]["kind"] == "youtube#video":
+#             videos.append("%s $(%s)" % (search_result["snippet"]["title"],search_result["id"]["videoId"]))
+#             doc = {
+#                             'VIDEOID' : search_result["id"]["videoId"],
+#                             'TITLE' : search_result["snippet"]["title"],
+#                             'URL' : search_result["snippet"]["thumbnails"]["medium"]["url"]
+#                          }
+            
 
+#         elif search_result["id"]["kind"] == "youtube#channel":
+#             channels.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["channelID"]))
+        
+#         elif search_result["id"]["kind"] == "youtube#playlist":
+#             playlists.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["playlistID"]))
+#         db.videoList.insert_one(doc)      
+#         print(doc)
 
-# def run():
-#    schedule.every().day.at('13:00').do(job) # 매일 09:00 마다 job 함수를 실행  자동 실행 안되는거 질문
-#    # schedule.every(10).second.do(job)
+# def thread_run():
+#    print('scraping start')
+#    #schedule.every().day.at('09:00').do(job)
+#    schedule.every(10).seconds.do(job)
 #    while True:
 #       schedule.run_pending()
 
+@app.route('/news', methods=['GET'])
+def read_news():
+   news = list(db.NEWS.find({},{'_id':False}))  
+   print(news)
+
+   return  jsonify({'result': 'success','news': news})
+
+
+@app.route('/api/stockSave', methods=['POST'])
+def stock_save():
+   d = date.today() - timedelta(25)
+   Date = d.isoformat()
+   name = request.form['name'] 
+   symbol = db.STOCK.find_one({"$or": [{'Name': name}, {'Symbol': name}]}, {'_id':False})
+   # print(symbol)
+   port_symbol = symbol['Symbol']
+   port_name = symbol['Name']
+   df = fdr.DataReader(symbol, Date)
+   dt = df.index.strftime('%Y-%m-%d').values
+   df = df['Close']
+   df = df.tolist()
+   port_list = []
+   for i in range(len(df)):
+      st ={
+         'DATE': dt[i][5:],
+         'DATA' : df[i]
+      }
+      port_list.append(st)
+   
+   print(port_list)
+   return  jsonify({'result': 'success','port_list': port_list, 'port_symbol':port_symbol, 'port_name':port_name})
+
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)
+   # run()
 
 
 
+# class AsyncTask:
+#    def __init__(self):
+#       pass
 
+#    def thread_run(self):
+#       print('scraping start')
+#       #schedule.every().day.at('09:00').do(job)
+#       schedule.every(10).seconds.do(job)
+#       while True:
+#          schedule.run_pending()
+#       threading.Timer(1,self.thread_run).start()
+
+# def run():
+#     print ('Async Function')
+#     at = AsyncTask()
+#     at.thread_run()
 
