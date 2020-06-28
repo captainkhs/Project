@@ -36,10 +36,10 @@ db = client.dbsparta
 def home():
    return render_template('index.html')
 
-# @app.route('/currency', methods=['GET'])
-# def read_currency():
-#    r = requests.get('https://earthquake.kr:23490/query/USDKRW,CNYKRW,EURKRW,JPYKRW')
-#    return  r.json()
+@app.route('/currency', methods=['GET'])
+def read_currency():
+   r = requests.get('https://earthquake.kr:23490/query/USDKRW,CNYKRW,EURKRW,JPYKRW')
+   return  r.json()
 
 @app.route('/korindices', methods=['GET'])
 def read_korindices():
@@ -145,40 +145,6 @@ def read_utube():
 
    return  jsonify({'result': 'success','utube': utube})
 
-# def job():
-#     DEVELOPER_KEY = "AIzaSyAmmHbqw6Dz1JH_qNs5IzTLy4gt7O7HAEo"
-#     YOUTUBE_API_SERVICE_NAME = "youtube"
-#     YOUTUBE_API_VERSION = "v3"  
-#     youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
-#     search_response = youtube.search().list(q = "미국주식", order = "date", part = "snippet", maxResults = 10).execute()
-#     videos = []
-#     channels = []
-#     playlists = []
-#     for search_result in search_response.get("items", []):
-#         if search_result["id"]["kind"] == "youtube#video":
-#             videos.append("%s $(%s)" % (search_result["snippet"]["title"],search_result["id"]["videoId"]))
-#             doc = {
-#                             'VIDEOID' : search_result["id"]["videoId"],
-#                             'TITLE' : search_result["snippet"]["title"],
-#                             'URL' : search_result["snippet"]["thumbnails"]["medium"]["url"]
-#                          }
-            
-
-#         elif search_result["id"]["kind"] == "youtube#channel":
-#             channels.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["channelID"]))
-        
-#         elif search_result["id"]["kind"] == "youtube#playlist":
-#             playlists.append("%s (%s)" %(search_result["snippet"]["title"], search_result["id"]["playlistID"]))
-#         db.videoList.insert_one(doc)      
-#         print(doc)
-
-# def thread_run():
-#    print('scraping start')
-#    #schedule.every().day.at('09:00').do(job)
-#    schedule.every(10).seconds.do(job)
-#    while True:
-#       schedule.run_pending()
-
 @app.route('/news', methods=['GET'])
 def read_news():
    news = list(db.NEWS.find({},{'_id':False}))  
@@ -193,10 +159,10 @@ def stock_save():
    Date = d.isoformat()
    name = request.form['name'] 
    symbol = db.STOCK.find_one({"$or": [{'Name': name}, {'Symbol': name}]}, {'_id':False})
-   # print(symbol)
    port_symbol = symbol['Symbol']
    port_name = symbol['Name']
-   df = fdr.DataReader(symbol, Date)
+   
+   df = fdr.DataReader(port_symbol, Date)
    dt = df.index.strftime('%Y-%m-%d').values
    df = df['Close']
    df = df.tolist()
@@ -206,31 +172,15 @@ def stock_save():
          'DATE': dt[i][5:],
          'DATA' : df[i]
       }
-      port_list.append(st)
-   
+      port_list.append(st)   
    print(port_list)
+   # db.stockname.insert_one(port_name)
    return  jsonify({'result': 'success','port_list': port_list, 'port_symbol':port_symbol, 'port_name':port_name})
+
 
 if __name__ == '__main__':  
    app.run('0.0.0.0', port=5000, debug=True)
-   # run()
+  
 
 
-
-# class AsyncTask:
-#    def __init__(self):
-#       pass
-
-#    def thread_run(self):
-#       print('scraping start')
-#       #schedule.every().day.at('09:00').do(job)
-#       schedule.every(10).seconds.do(job)
-#       while True:
-#          schedule.run_pending()
-#       threading.Timer(1,self.thread_run).start()
-
-# def run():
-#     print ('Async Function')
-#     at = AsyncTask()
-#     at.thread_run()
 
