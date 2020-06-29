@@ -141,7 +141,7 @@ def stock_search():
 
 @app.route('/utube', methods=['GET'])
 def read_utube():
-   utube = list(db.videoList.find({},{'_id':False}))  
+   utube = list(db.videoList.find({},{'_id':False}).limit(10))
 
    return  jsonify({'result': 'success','utube': utube})
 
