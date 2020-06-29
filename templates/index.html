@@ -151,6 +151,7 @@
     </style>
 
     <script>
+
         $('#myModal').on('shown.bs.modal', function () {
             $('#myInput').trigger('focus')
         })
@@ -391,10 +392,7 @@
                             <div>
                                 <p>${news_body}.....</p>          
                             </div>
-                            </div>
-                                          
-                                      
-                                        `)
+                            </div>`)
             }
             $.ajax({
                 type: "GET",
@@ -434,9 +432,9 @@
                 success: function (response) {
                     if (response['result'] == 'success') {
                         let port = response['port_list'];
-                        let port_new = port.slice(-1,);                   
+                        let port_new = port.slice(-1,);
                         let port_name = response['port_name'];
-                        $('#port_name').append(port_name);                     
+                        $('#port_name').append(port_name);
                         for (let y of port_new) {
                             $('#port_data').append(`${y.DATA}`);
                         }
